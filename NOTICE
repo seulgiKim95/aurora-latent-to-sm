@@ -1,0 +1,35 @@
+aurora-latent-to-sm — third-party code
+======================================
+
+This repository contains and builds on third-party code.
+
+1. Microsoft Aurora — MIT License
+   - Copyright (c) Microsoft Corporation.
+   - Source: https://github.com/microsoft/aurora  (pip: microsoft-aurora==1.7.0)
+   - Used two ways:
+       (a) as a pip dependency: models/*/train_hydr/ import from the `aurora`
+           package (aurora.model.*, aurora.normalisation, aurora.batch);
+       (b) models/*/train_hydr/aurora_lite.py is a modified copy of Aurora's
+           model file (aurora/model/aurora.py). The MIT copyright header is
+           retained; the only change is returning the decoder latent in
+           forward(). The MIT License therefore applies to this file.
+
+2. Aurora-Lite-Decoder (ETH Zürich) — GPL-3.0 License
+   - F. Lehmann, F. Ozdemir, B. Soja, T. Hoefler, S. Mishra, S. Schemm,
+     "Finetuning a Weather Foundation Model with Lightweight Decoders for
+     Unseen Physical Processes", arXiv:2506.19088.
+   - Source repository: https://github.com/lehmannfa/aurora-lite-decoder  (License: GPL-3.0)
+   - The lightweight Perceiver decoder is taken from that repository:
+       - models/mlp/train_hydr/decoder_lite.py   — copied verbatim from the
+         upstream aurora/model/decoder_lite.py (ETH's original code, no MIT
+         header).
+       - models/mlp_enc/train_hydr/decoder.py,
+         models/unet/train_hydr/decoder.py        — derived/modified from the
+         same upstream decoder_lite.py.
+     These files are therefore covered by GPL-3.0.
+
+   Because GPL-3.0 source is copied and redistributed here, this repository is
+   licensed under GPL-3.0 (see LICENSE). MIT-licensed files (e.g. aurora_lite.py)
+   keep their MIT headers; the combined, distributed work is GPL-3.0.
+
+Dataset sources and access links are listed in README.md ("Data & checkpoints").

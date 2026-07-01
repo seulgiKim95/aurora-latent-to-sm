@@ -1,0 +1,82 @@
+name: "mlp_enc"
+exp_name: "10years"
+
+paths:
+  # Single source of truth for paths. Edit these to your local locations.
+  # save_result.py reads all paths from this file.
+  base_era5:        "/path/to/ERA5_Aurora/"
+  base_mswep:       "/path/to/MSWEP/"                          # NOT used by this model (precipitation disabled) — placeholder is fine
+  static_file:      "/path/to/static/2025_static.nc"           # static fields
+  climatology_file: "/path/to/static/climatology_era5_swvl1.nc" # for get_metrics
+
+  experiment_root:  "/path/to/aurora_experiments/"   # trained checkpoints
+  rollout_root:     "/path/to/rollout_outputs/"      # rollout .nc outputs
+  save_dir: "."
+  log_dir: "."
+
+data:
+  start_date: '2004-01-01' # ~ 2025-11-30
+  end_date: '2015-03-31'
+  train_test_ratio: 1.0
+
+model:
+  # load_aurora_lite_small_model
+  # load_aurora_lite_model
+  loader_name: "load_aurora_lite_model"
+  checkpoint: null
+# checkpoint: ${paths.experiment_root}/${name}/0212_1130_10years/checkpoint_epoch_020.pth
+
+train:
+  epochs: 25
+  num_workers: 2 # use 0 for debugging
+  prefetch_factor: 2 # use null for debugging
+  persistent_workers: true  # use False for debugging
+  early_stopping_patience: 40
+  warmup_steps: 0 # not finetuning, so warmup 0
+  model_save: true
+
+  # scaler
+  use_scaler: false
+
+  # Optimizer
+  lr_new_vars: 1.e-1 # use this for learning rate
+  lr_decay: 1.e-5 # cosine decay value
+
+  # Distributed
+  use_ddp: true
+  use_fsdp: false
+  min_num_params: 10000000 # 10M
+  seed: 42
+  local_rank: 0 # when not using the distributed option
+
+loss:
+  var_weights: # variable weights
+    swvl1: 1.
+    evaporation: 0.
+    precipitation: 0.
+  
+  alpha: # L1, porosity
+    # weighting between losses when using multiple losses
+    swvl1:
+      L1: 1.
+      porosity: 0.0
+  
+  alpha_land_sea: # land weights
+    swvl1: 1.0
+    evaporation: 0.8
+    precipitation: 0.8
+
+hydra:
+  job:
+    chdir: true
+
+  run:
+    dir: ${paths.experiment_root}/${name}/${now:%m%d}_${now:%H%M}_${exp_name}
+
+  sweep:
+    dir: ${paths.experiment_root}/${name}/multirun/${now:%m%d}_${now:%H%M}_${exp_name}
+    subdir: ${hydra.job.num}
+
+  job_logging:
+    root:
+      handlers: [file]

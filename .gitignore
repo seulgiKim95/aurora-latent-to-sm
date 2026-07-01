@@ -1,0 +1,34 @@
+# Data & model weights (distributed separately — see data/README.md, checkpoints/README.md)
+**/*.nc
+**/*.pth
+**/*.ckpt
+**/*.npy
+**/*.memmap
+
+# Generated media & intermediate outputs
+**/*.gif
+**/*.png
+**/*.tiff
+**/*.ascii
+
+# Python
+**/__pycache__/
+**/*.pyc
+**/*.swp
+.ipynb_checkpoints/
+*.egg-info/
+build/
+dist/
+
+# Environments
+venv/
+env/
+.venv/
+
+# Logs
+**/*.log
+**/log/*
+!**/log/.gitkeep
+
+# OS
+.DS_Store
