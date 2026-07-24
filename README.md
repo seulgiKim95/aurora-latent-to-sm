@@ -38,12 +38,13 @@ aurora-latent-to-sm/
 │   ├── unet/          #   main model — train_hydr/ (model + training), config.yaml
 │   ├── mlp/           #   baseline
 │   └── mlp_enc/       #   variant
+├── analysis/          # evaluation & drought-analysis scripts (see Analysis below)
 ├── checkpoints/       # trained-weight download instructions
 └── environment.yml    # conda environment (all dependencies)
 ```
 
-> This repository releases the **model and training code**. The data-preprocessing,
-> drought (eSSMI) analysis, and figure-generation notebooks used in the paper are
+> This repository releases the **model, training, and analysis code**. The
+> data-preprocessing and figure-generation notebooks used in the paper are
 > maintained separately and available from the authors on request.
 
 ## Installation
@@ -88,8 +89,41 @@ cd models/unet/train_hydr                    # main model (or models/mlp, models
 torchrun --nproc_per_node=2 main.py exp_name='unet'
 ```
 
-`get_metrics.py` (where present) computes bootstrapped skill metrics from the
-resulting rollouts.
+The resulting rollout NetCDF files are the inputs to the evaluation scripts in
+`analysis/` (below).
+
+## Analysis
+
+Evaluation and drought-analysis scripts in `analysis/`, operating on the rollout
+outputs of the trained decoders. Data paths are set in the constants at the top
+of each script.
+
+**Forecast skill (vs. ERA5)**
+
+| Script | What it computes |
+|--------|------------------|
+| `get_metrics.py` | Lead-time ACC / MAE / RMSE / Bias with a block bootstrap (2,000 resamples, 30-day blocks) |
+| `get_persistence_metrics.py` | Persistence baselines (raw and anomaly persistence) for the same metrics |
+| `compute_swvl1_R2.py` | Per-time-step spatial anomaly R² / ACC for `swvl1` (cos-latitude weighted, land only) |
+| `create_rmse_map.py`, `create_residual_map.py` | Bootstrapped RMSE and residual maps |
+| `spatial_TC_LULC_hemi.py` | Spatial triple collocation (FM / SMAP / ASCAT) stratified by land cover and hemisphere |
+
+**Drought case studies (eSSMI)** — Argentina, Zambia, Oklahoma
+
+eSSMI is the Gaussian quantile of the logit-KDE climatology percentile of soil
+moisture; the drought mask is eSSMI ≤ −1.
+
+- `ESSMI_IoU_SMAP_FM.py` — end-to-end pipeline: builds SMAP and Aurora (FM)
+  eSSMI fields, then scores the FM drought masks against SMAP with IoU / Recall
+  per lead time (1–30 days), on the SMAP grid:
+
+  ```bash
+  python ESSMI_IoU_SMAP_FM.py                        # all regions, all steps
+  python ESSMI_IoU_SMAP_FM.py Oklahoma --steps iou   # score only, from saved eSSMI files
+  ```
+
+- `ESSMI_IoU_ECMWFS2S.py` — the same eSSMI / IoU scoring for the ECMWF S2S
+  benchmark (GRIB → NetCDF conversion, resampled to the SMAP grid).
 
 ## Citation
 
