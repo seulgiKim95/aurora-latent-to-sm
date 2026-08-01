@@ -30,3 +30,7 @@ All paths (inputs, checkpoints, outputs) are read from each model's
 
 `get_metrics.py` (in `mlp/` and `unet/`) computes bootstrapped skill metrics
 (ACC, MAE, RMSE, bias) from the roll-out outputs.
+
+## Acknowledgments
+The MLP decoder implementation is taken from Lehmann et al. (2025)
+(<https://github.com/lehmannfa/aurora-lite-decoder>).
