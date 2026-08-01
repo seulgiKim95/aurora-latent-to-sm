@@ -19,7 +19,9 @@ __all__ = ["Perceiver3DDecoderLite"]
 
 
 class MLPDecoderLite(nn.Module):
-    """Multi-scale multi-source multi-variable decoder based on the Perceiver architecture."""
+    """Multi-scale multi-source multi-variable decoder based on the Perceiver architecture.
+    
+    Taken from Lehmann et al. (2025), <https://github.com/lehmannfa/aurora-lite-decoder>, licensed under <GPLv3>."""
 
     def __init__(
         self,
