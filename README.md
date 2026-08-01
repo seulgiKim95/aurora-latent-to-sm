@@ -1,5 +1,10 @@
 # aurora-latent-to-sm
 
+Seulgi Kim<sup>1</sup>, Donggeon Lee<sup>1</sup>, Subin Kim<sup>1</sup>, Hyunglok Kim<sup>1,\*</sup>
+
+<sup>1</sup>Department of Environment and Energy Engineering, Gwangju Institute of Science and Technology (GIST), Gwangju, Republic of Korea
+<sup>\*</sup>Corresponding author: hyunglokkim@gist.ac.kr
+
 Code for the paper **"Hydrological States Emerge in the Latent Space of a Weather
 Foundation Model"** — adapting a weather foundation model to global soil-moisture
 forecasting with lightweight decoders trained on its frozen latent space.
